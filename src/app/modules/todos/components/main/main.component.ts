@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { combineLatest, Observable } from 'rxjs';
 import { TodosService } from 'src/app/modules/todos/services/todos.service';
 import { TodoInterface } from 'src/app/modules/todos/types/todo.interface';
@@ -9,11 +9,16 @@ import { FilterEnum } from 'src/app/modules/todos/types/filter.enum';
   selector: 'app-main',
   templateUrl: './main.component.html',
 })
-export class MainComponent implements OnInit {
+export class MainComponent {
   visibleTodos$!: Observable<TodoInterface[]>;
   noTodoClass$!: Observable<boolean>;
+  isAllTodosSelected$!: Observable<boolean>;
 
   constructor(private todosService: TodosService) {
+    this.isAllTodosSelected$ = this.todosService.todos$.pipe(
+      map((todos) => todos.every((todo) => todo.isCompleted))
+    );
+
     this.noTodoClass$ = this.todosService.todos$.pipe(
       map((todos) => todos.length === 0)
     );
@@ -34,5 +39,8 @@ export class MainComponent implements OnInit {
     );
   }
 
-  ngOnInit(): void {}
+  toggleAllTodos(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    this.todosService.toggleAll(target.checked);
+  }
 }

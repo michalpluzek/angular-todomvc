@@ -26,4 +26,15 @@ export class TodosService {
   generateId() {
     return Math.random().toString(16);
   }
+
+  toggleAll(isCompleted: boolean): void {
+    const updatedTodos = this.todos$.getValue().map((todo) => {
+      return {
+        ...todo,
+        isCompleted,
+      };
+    });
+
+    this.todos$.next(updatedTodos);
+  }
 }
